@@ -38,7 +38,7 @@ output := machine.Transition("TOGGLE")
 
 - [x] Implement basic finite state machine with transition
 - [x] Add condition `cond` function calling to get the output.
-- [ ] Add multiple actions and call the function on state change.
+- [x] Add multiple actions and call the function on state change.
 - [ ] Add state change listeners. 
     - May be use channels and concurrency concepts of golang [publisher-subscriber pattern]
     - Also implement basic callback function as well. 
