@@ -34,15 +34,15 @@ type IMachine interface {
 
 // Current returns current state
 func (m *Machine) Current() string {
+	if m.current == "" {
+		return m.Initial
+	}
 	return m.current
 }
 
 // Transition transitions to next state
 func (m *Machine) Transition(event string) string {
-	current := m.current
-	if current == "" {
-		current = m.Initial
-	}
+	current := m.Current()
 	transitions := m.States[current].On
 	for evt := range transitions {
 		if evt == event {
