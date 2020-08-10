@@ -65,9 +65,9 @@ func TestMachineCondition(t *testing.T) {
 func TestMultipleActions(t *testing.T) {
 	times := 0
 	actions := []func(string, string){
-		func(c, n string) { times = times + 1 },
-		func(c, n string) { times = times + 1 },
-		func(c, n string) { times = times + 1 },
+		func(c, n string) { times++ },
+		func(c, n string) { times++ },
+		func(c, n string) { times++ },
 	}
 	machine := statemachine.Machine{
 		ID:      "machine-1",
@@ -92,4 +92,35 @@ func TestMultipleActions(t *testing.T) {
 	}
 	machine.Transition("TOGGLE")
 	assert.Equal(t, times, len(actions), "actions are not called")
+}
+
+func TestStateSubscribers(t *testing.T) {
+	times := 0
+	machine := statemachine.Machine{
+		ID:      "machine-1",
+		Initial: "on",
+		Subscribers: []func(string, string){
+			func(c, n string) { times++ },
+		},
+		States: statemachine.StateMap{
+			"on": statemachine.MachineState{
+				On: statemachine.TransitionMap{
+					"TOGGLE": statemachine.MachineTransition{
+						To: "off",
+					},
+				},
+			},
+			"off": statemachine.MachineState{
+				On: statemachine.TransitionMap{
+					"TOGGLE": statemachine.MachineTransition{
+						To: "on",
+					},
+				},
+			},
+		},
+	}
+	for i := 0; i < 10; i++ {
+		machine.Transition("TOGGLE")
+	}
+	assert.Equal(t, times, 10, "subscribers are not called")
 }

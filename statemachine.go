@@ -20,10 +20,11 @@ type StateMap map[string]MachineState
 
 // Machine datatype
 type Machine struct {
-	ID      string
-	Initial string
-	current string
-	States  StateMap
+	ID          string
+	Initial     string
+	current     string
+	States      StateMap
+	Subscribers []func(curr, next string)
 }
 
 // IMachine machine interface
@@ -47,6 +48,9 @@ func (m *Machine) Transition(event string) string {
 	for evt := range transitions {
 		if evt == event {
 			next := transitions[evt].To
+
+			callFuncts(m.Subscribers, current, next)
+
 			if transitions[evt].Cond != nil {
 				if transitions[evt].Cond(current, next) {
 					m.current = next
@@ -55,13 +59,18 @@ func (m *Machine) Transition(event string) string {
 				return current
 			}
 			if transitions[evt].Actions != nil {
-				for _, action := range transitions[evt].Actions {
-					action(current, next)
-				}
+				callFuncts(transitions[evt].Actions, current, next)
 			}
+
 			m.current = next
 			return next
 		}
 	}
 	return current
+}
+
+func callFuncts(functs []func(string, string), current, next string) {
+	for _, funct := range functs {
+		funct(current, next)
+	}
 }
