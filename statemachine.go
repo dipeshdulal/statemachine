@@ -2,9 +2,9 @@ package statemachine
 
 // MachineTransition transition map
 type MachineTransition struct {
-	Action []func(current string)
-	Cond   func(current string) bool
-	To     string
+	Actions []func(current, next string)
+	Cond    func(current, next string) bool
+	To      string
 }
 
 // TransitionMap map with transitions
@@ -48,11 +48,16 @@ func (m *Machine) Transition(event string) string {
 		if evt == event {
 			next := transitions[evt].To
 			if transitions[evt].Cond != nil {
-				if transitions[evt].Cond(current) {
+				if transitions[evt].Cond(current, next) {
 					m.current = next
 					return next
 				}
 				return current
+			}
+			if transitions[evt].Actions != nil {
+				for _, action := range transitions[evt].Actions {
+					action(current, next)
+				}
 			}
 			m.current = next
 			return next

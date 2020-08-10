@@ -43,7 +43,7 @@ func TestMachineCondition(t *testing.T) {
 				On: statemachine.TransitionMap{
 					"TOGGLE": statemachine.MachineTransition{
 						To: "off",
-						Cond: func(curr string) bool {
+						Cond: func(curr, next string) bool {
 							return curr == ""
 						},
 					},
@@ -60,4 +60,36 @@ func TestMachineCondition(t *testing.T) {
 	}
 	output := machine.Transition("TOGGLE")
 	assert.Equal(t, output, "on", "Transition should not occur on toggle. due to condition")
+}
+
+func TestMultipleActions(t *testing.T) {
+	times := 0
+	actions := []func(string, string){
+		func(c, n string) { times = times + 1 },
+		func(c, n string) { times = times + 1 },
+		func(c, n string) { times = times + 1 },
+	}
+	machine := statemachine.Machine{
+		ID:      "machine-1",
+		Initial: "on",
+		States: statemachine.StateMap{
+			"on": statemachine.MachineState{
+				On: statemachine.TransitionMap{
+					"TOGGLE": statemachine.MachineTransition{
+						To:      "off",
+						Actions: actions,
+					},
+				},
+			},
+			"off": statemachine.MachineState{
+				On: statemachine.TransitionMap{
+					"TOGGLE": statemachine.MachineTransition{
+						To: "on",
+					},
+				},
+			},
+		},
+	}
+	machine.Transition("TOGGLE")
+	assert.Equal(t, times, len(actions), "actions are not called")
 }
