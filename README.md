@@ -39,6 +39,4 @@ output := machine.Transition("TOGGLE")
 - [x] Implement basic finite state machine with transition
 - [x] Add condition `cond` function calling to get the output.
 - [x] Add multiple actions and call the function on state change.
-- [x] Add state change listeners. 
-- [ ] Concurrent subscribers to state changes.
- 
+- [x] Add state change listeners.  
