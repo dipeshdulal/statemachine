@@ -29,7 +29,7 @@ type Machine struct {
 
 // IMachine machine interface
 type IMachine interface {
-	Transition() string
+	Transition(event string) string
 	Current() string
 }
 

@@ -44,3 +44,5 @@ output := machine.Transition("TOGGLE")
 - [x] Add condition `cond` function calling to get the output.
 - [x] Add multiple actions and call the function on state change.
 - [x] Add state change listeners.  
+- [x] Support for parallel state machines.
+- [ ] Implement Parallel State machines state listeners.
