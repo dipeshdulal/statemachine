@@ -12,6 +12,7 @@ Inspired from [@davidkpiano](https://github.com/davidkpiano) X-State library. (m
 Figure from xstate.js.org/viz/
 
 
+##### Basic State Machine
 ```go
 machine := statemachine.Machine{
     ID:      "machine-1",
@@ -38,6 +39,24 @@ output := machine.Transition("TOGGLE")
 // after sending TOGGLE event
 ```
 
+##### Parallel Machine
+You can also build a parallel state machine, that bundles up multiple state machines together. 
+```go
+parallel := statemachine.ParallelMachine{
+    Machines: statemachine.Machines{
+        "machine-1": &machineOne,
+        "machine-2": &machineTwo,
+    },
+    Subscribers: statemachine.ParallelSubscribers{
+        // some state subscribers
+    },
+}
+
+// Send machine-1 TOGGLE state  
+next, err := parallel.Transition("machine-1.TOGGLE")
+```
+
+
 ##### Checklist
 
 - [x] Implement basic finite state machine with transition
@@ -45,4 +64,4 @@ output := machine.Transition("TOGGLE")
 - [x] Add multiple actions and call the function on state change.
 - [x] Add state change listeners.  
 - [x] Support for parallel state machines.
-- [ ] Implement Parallel State machines state listeners.
+- [x] Implement Parallel State machines state listeners.
