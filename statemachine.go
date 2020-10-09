@@ -45,26 +45,24 @@ func (m *Machine) Current() string {
 func (m *Machine) Transition(event string) string {
 	current := m.Current()
 	transitions := m.States[current].On
-	for evt := range transitions {
-		if evt == event {
-			next := transitions[evt].To
+	next := transitions[event].To
 
-			callFuncts(m.Subscribers, current, next)
+	if next != "" {
+		callFuncts(m.Subscribers, current, next)
 
-			if transitions[evt].Cond != nil {
-				if transitions[evt].Cond(current, next) {
-					m.current = next
-					return next
-				}
-				return current
+		if transitions[event].Cond != nil {
+			if transitions[event].Cond(current, next) {
+				m.current = next
+				return next
 			}
-			if transitions[evt].Actions != nil {
-				callFuncts(transitions[evt].Actions, current, next)
-			}
-
-			m.current = next
-			return next
+			return current
 		}
+		if transitions[event].Actions != nil {
+			callFuncts(transitions[event].Actions, current, next)
+		}
+
+		m.current = next
+		return next
 	}
 	return current
 }
